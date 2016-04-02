@@ -5,11 +5,12 @@ import scala.collection.mutable
 /**
   * Created by Sander on 30-3-2016.
   */
-class Spells(spellSlots: List[Int], spells: List[List[String]]) {
+class Spells(spellSlots: List[Int], spells: List[List[Spell]]) {
 
-  def addSpells(spells: Spells, includeSpellSlots: Boolean): Spells = {
-    val newSpellSlots = if (includeSpellSlots) addArrays[Int](this.spellSlots, spells.spellSlots, (x, y) => x + y) else this.spellSlots
-
+  def addSpells(spellsToAdd: Spells, includeSpellSlots: Boolean): Spells = {
+    val newSpellSlots = if (includeSpellSlots) addArrays[Int](this.spellSlots, spellsToAdd.spellSlots, (x, y) => x + y) else this.spellSlots
+    val newSpells = addArrays[List[Spell]](this.spells, spellsToAdd.spells, (l1, l2) => l1 ++ l2)
+    Spells(newSpellSlots, newSpells)
   }
 
 
@@ -28,7 +29,7 @@ class Spells(spellSlots: List[Int], spells: List[List[String]]) {
 }
 
 object Spells {
-  def apply(spellSlots: List[Int], spells: List[List[String]]): Spells = {
+  def apply(spellSlots: List[Int], spells: List[List[Spell]]): Spells = {
     new Spells(spellSlots, spells)
   }
 }

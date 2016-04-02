@@ -18,7 +18,7 @@ class Guard(stats: Map[String, Int], equipment: List[Equipment], abilities: List
   }
 
   def addSpells(spells: Spells): Guard = {
-    val newSpells = this.spells + spells
+    val newSpells = this.spells.addSpells(spells, false)
     Guard(stats, equipment, abilities, newSpells)
   }
 
