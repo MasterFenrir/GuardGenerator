@@ -18,7 +18,7 @@ class Guard(stats: Map[String, Int], equipment: List[Equipment], abilities: List
   }
 
   def addSpells(spells: Spells): Guard = {
-    val newSpells = this.spells.addSpells(spells, false)
+    val newSpells = this.spells.addSpells(spells)
     Guard(stats, equipment, abilities, newSpells)
   }
 
@@ -41,6 +41,22 @@ class Guard(stats: Map[String, Int], equipment: List[Equipment], abilities: List
 }
 
 object Guard {
+
+  object AbilityNames {
+    val STR = "STR"
+    val DEX = "DEX"
+    val CON = "CON"
+    val INT = "INT"
+    val WIS = "WIS"
+    val CHA = "CHA"
+  }
+
+  object Combat {
+    val AC = "AC"
+    val HP = "HP"
+    val SPEED = "Speed"
+  }
+
   def apply(stats: Map[String, Int], equipment: List[Equipment], abilities: List[Ability], spells: Spells): Guard = {
     new Guard(stats, equipment, abilities, spells)
   }

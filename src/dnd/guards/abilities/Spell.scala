@@ -3,10 +3,10 @@ package dnd.guards.abilities
 /**
   * Created by sander on 4/2/16.
   */
-class Spell(name: String, level: Int, school: String,
-            castingTime: String, range: String,
-            components: String, duration: String,
-            description: String, higherLevels: String) {
+class Spell(val name: String, val level: Int, val school: String,
+            val castingTime: String, val range: String,
+            val components: String, val duration: String,
+            val description: String, val higherLevels: String) {
 
   override def toString: String = {
     s"Spell: $name\n" +
@@ -51,7 +51,7 @@ object Spell {
   def apply(name: String, level: Int, category: String,
             castingTime: String, range: String,
             components: String, duration: String,
-            description: String, higherLevels: String) {
+            description: String, higherLevels: String): Spell = {
     new Spell(name, level, category, castingTime, range,
       components, duration, description, higherLevels)
   }

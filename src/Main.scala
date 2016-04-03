@@ -7,8 +7,7 @@ object Main {
 
   def main(args: Array[String]) {
     val testSpell = Spell("SPELLNAME", Spell.Level.FIRST, Spell.Category.ABJURATION,
-    "1 action", "120 ft", "Booty", "1 hour", "Does stuff", "Nothing!")
-    println(testSpell)
+      "1 action", "120 ft", "Booty", "1 hour", "Does stuff", "Nothing!")
+    println("Testspell: " + testSpell)
   }
-  
 }
