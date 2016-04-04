@@ -1,4 +1,6 @@
-import dnd.guards.abilities.Spell
+import dnd.guards.Guard
+import dnd.guards.abilities.{Ability, Equipment, Spells}
+import dnd.guards.builder.{EquipmentBuilder, GuardBuilder}
 
 /**
   * Created by Sander on 28-3-2016.
@@ -6,8 +8,6 @@ import dnd.guards.abilities.Spell
 object Main {
 
   def main(args: Array[String]) {
-    val testSpell = Spell("SPELLNAME", Spell.Level.FIRST, Spell.Category.ABJURATION,
-      "1 action", "120 ft", "Booty", "1 hour", "Does stuff", "Nothing!")
-    println("Testspell: " + testSpell)
+    println(GuardBuilder.Stats.melee("Human"))
   }
 }

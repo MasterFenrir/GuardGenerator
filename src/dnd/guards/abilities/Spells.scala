@@ -41,4 +41,8 @@ object Spells {
   def apply(spellSlots: List[Int], spells: List[List[Spell]]): Spells = {
     new Spells(spellSlots, spells)
   }
+
+  def apply(): Spells = {
+    new Spells(List[Int](), List[List[Spell]]())
+  }
 }

@@ -5,21 +5,35 @@ import dnd.guards.abilities.{Ability, Equipment, Spells}
 /**
   * Created by Sander on 30-3-2016.
   */
-class Guard(stats: Map[String, Int], equipment: List[Equipment], abilities: List[Ability], spells: Spells) {
+class Guard(stats: Map[String, Int], primeStat: String, equipment: List[Equipment], proficiencies: List[String], abilities: List[Ability], spells: Spells) {
 
   def addEquipment(equipment: Equipment): Guard = {
     val newEquipment = this.equipment :+ equipment
-    Guard(stats, newEquipment, abilities, spells)
+    Guard(stats, primeStat, newEquipment, proficiencies, abilities, spells)
   }
 
   def addAbility(ability: Ability): Guard = {
     val newAbilities = this.abilities :+ ability
-    Guard(stats, equipment, newAbilities, spells)
+    Guard(stats, primeStat, equipment, proficiencies, newAbilities, spells)
   }
 
   def addSpells(spells: Spells): Guard = {
     val newSpells = this.spells.addSpells(spells)
-    Guard(stats, equipment, abilities, newSpells)
+    Guard(stats, primeStat, equipment, proficiencies, abilities, newSpells)
+  }
+
+  def getModifier(stat: String): Int = {
+    var value: Double = stats(stat) - 10
+    value = value / 2
+    math.floor(value).toInt
+  }
+
+  def attackModifier: Int = {
+    getModifier(primeStat) + stats(Guard.StatNames.PROF)
+  }
+
+  def defaultDamageModifier: Int = {
+    getModifier(primeStat)
   }
 
   /**
@@ -35,29 +49,28 @@ class Guard(stats: Map[String, Int], equipment: List[Equipment], abilities: List
       else
         (kv._1, kv._2)
     })
-    Guard(newStats, equipment, abilities, spells)
+    Guard(newStats, primeStat, equipment, proficiencies, abilities, spells)
   }
 
 }
 
 object Guard {
 
-  object AbilityNames {
+  def apply(stats: Map[String, Int], primeStat: String, equipment: List[Equipment], proficiencies: List[String], abilities: List[Ability], spells: Spells): Guard = {
+    new Guard(stats, primeStat, equipment, proficiencies, abilities, spells)
+  }
+
+  object StatNames {
     val STR = "STR"
     val DEX = "DEX"
     val CON = "CON"
     val INT = "INT"
     val WIS = "WIS"
     val CHA = "CHA"
-  }
-
-  object Combat {
     val AC = "AC"
     val HP = "HP"
     val SPEED = "Speed"
+    val PROF = "PROF"
   }
 
-  def apply(stats: Map[String, Int], equipment: List[Equipment], abilities: List[Ability], spells: Spells): Guard = {
-    new Guard(stats, equipment, abilities, spells)
-  }
 }

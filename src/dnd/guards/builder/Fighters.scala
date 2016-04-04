@@ -9,11 +9,11 @@ import scala.collection.mutable
   */
 object Fighters {
 
-  val guards: Map[String, Guard]
+  val guards: Map[String, Guard] = buildGuards
 
   def buildGuards: Map[String, Guard] = {
-    val guardMap = mutable.HashMap[String, Guard]
-
+    val guardMap = mutable.HashMap[String, Guard]()
+    Map[String, Guard]()
   }
 
 }

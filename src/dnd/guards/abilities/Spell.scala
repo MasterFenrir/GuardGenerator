@@ -24,6 +24,19 @@ class Spell(val name: String, val level: Int, val school: String,
 
 object Spell {
 
+  def apply(name: String, level: Int, category: String,
+            castingTime: String, range: String,
+            components: String, duration: String,
+            description: String, higherLevels: String): Spell = {
+    new Spell(name, level, category, castingTime, range,
+      components, duration, description, higherLevels)
+  }
+
+  def apply(name: String, level: Int): Spell = {
+    new Spell(name, level, "", "", "",
+      "", "", "", "")
+  }
+
   object Level {
     val CANTRIP = 0
     val FIRST = 1
@@ -46,13 +59,5 @@ object Spell {
     val NECROMANCY = "Necromancy"
     val ENCHANTMENT = "Enchantment"
     val ILLUSION = "Illusion"
-  }
-
-  def apply(name: String, level: Int, category: String,
-            castingTime: String, range: String,
-            components: String, duration: String,
-            description: String, higherLevels: String): Spell = {
-    new Spell(name, level, category, castingTime, range,
-      components, duration, description, higherLevels)
   }
 }
