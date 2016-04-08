@@ -11,15 +11,15 @@ import scala.util.Random
 object EquipmentBuilder {
 
   val equipmentMap = Map(
-    GuardBuilder.Races.HUMAN -> eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR, Weapons.CROSSBOW),
-    GuardBuilder.Races.DWARF -> eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR, Weapons.HALBERD, Weapons.CROSSBOW),
-    GuardBuilder.Races.WARFORGED -> eqList(Weapons.WAR_HAMMER, Weapons.MORNING_STAR, Weapons.CROSSBOW),
-    GuardBuilder.Races.ELF -> eqList(Weapons.RAPIER_SHIELD, Weapons.CROSSBOW),
-    GuardBuilder.Races.HALF_ELF -> eqList(Weapons.RAPIER_SHIELD, Weapons.CROSSBOW),
-    GuardBuilder.Races.DRAGONBORN -> eqList(Weapons.BATTLE_AXE_SHIELD, Weapons.SPEAR, Weapons.CROSSBOW),
-    GuardBuilder.Races.HALF_ORC -> eqList(Weapons.GREAT_AXE, Weapons.MORNING_STAR, Weapons.CROSSBOW),
-    GuardBuilder.Races.TIEFLING -> eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR, Weapons.CROSSBOW)
-  ).withDefaultValue(eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR, Weapons.CROSSBOW))
+    GuardBuilder.Races.HUMAN -> eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR),
+    GuardBuilder.Races.DWARF -> eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR, Weapons.HALBERD),
+    GuardBuilder.Races.WARFORGED -> eqList(Weapons.WAR_HAMMER, Weapons.MORNING_STAR),
+    GuardBuilder.Races.ELF -> eqList(Weapons.RAPIER_SHIELD),
+    GuardBuilder.Races.HALF_ELF -> eqList(Weapons.RAPIER_SHIELD),
+    GuardBuilder.Races.DRAGONBORN -> eqList(Weapons.BATTLE_AXE_SHIELD, Weapons.SPEAR),
+    GuardBuilder.Races.HALF_ORC -> eqList(Weapons.GREAT_AXE, Weapons.MORNING_STAR),
+    GuardBuilder.Races.TIEFLING -> eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR)
+  ).withDefaultValue(eqList(Weapons.SWORD_SHIELD, Weapons.SPEAR))
 
   def apply(race: String): Equipment = {
     val i = Random.nextInt(equipmentMap(race).length)

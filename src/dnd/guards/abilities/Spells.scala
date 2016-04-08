@@ -35,6 +35,18 @@ class Spells(val spellSlots: List[Int], val spells: List[List[Spell]]) {
     newArray.toList ++ large.slice(small.length, large.length)
   }
 
+  override def toString: String = {
+    var resultString = "Spellslots:"
+    for (i <- spellSlots.indices) {
+      resultString = s"$resultString ${i + 1}:${spellSlots(i)}"
+    }
+    resultString = s"$resultString\nSpells:\n"
+    for (i <- spells.indices) {
+      resultString = s"$resultString${i + 1}: ${spells(i).mkString(", ")}\n"
+    }
+    resultString
+  }
+
 }
 
 object Spells {

@@ -8,7 +8,7 @@ class Spell(val name: String, val level: Int, val school: String,
             val components: String, val duration: String,
             val description: String, val higherLevels: String) {
 
-  override def toString: String = {
+  def fullDescription: String = {
     s"Spell: $name\n" +
       s"Level: $level\n" +
       s"School: $school\n" +
@@ -19,6 +19,8 @@ class Spell(val name: String, val level: Int, val school: String,
       s"Description: $description\n" +
       s"At higher levels: $higherLevels"
   }
+
+  override def toString: String = name
 
 }
 
@@ -60,4 +62,5 @@ object Spell {
     val ENCHANTMENT = "Enchantment"
     val ILLUSION = "Illusion"
   }
+
 }

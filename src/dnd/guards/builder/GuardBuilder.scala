@@ -1,18 +1,118 @@
 package dnd.guards.builder
 
 import dnd.guards.Guard
-import dnd.guards.abilities.{Ability, Spell, Spells}
+import dnd.guards.abilities.{Ability, Equipment, Spell, Spells}
 
 import scala.collection.immutable.ListMap
+import scala.collection.mutable
+import scala.util.Random
 
 /**
   * Created by Sander on 30-3-2016.
   */
-class GuardBuilder {
-
-}
-
 object GuardBuilder {
+
+  def apply(count: Int, tieflingWarforged: Boolean, leader: Boolean): List[Guard] = {
+    var meleeChance = 70
+
+    var guardList = mutable.MutableList[Guard]()
+
+    for(i <- 1 to count){
+      val race = getRace(tieflingWarforged)
+      var stats = ListMap[String, Int]()
+      var primeStat = ""
+      var equipment = List[Equipment]()
+      var proficiencies = List[String]()
+      var abilities = getAbilities(race)
+      if(Random.nextInt(100) < meleeChance) {
+        meleeChance = meleeChance - ((1/count) * 100)
+        stats = Stats.melee(race)
+
+        if (race == Races.ELF) {
+          primeStat = Guard.StatNames.DEX
+          abilities = abilities :+ Abilities.SNEAK_ATTACK
+          proficiencies = List(Proficiencies.PERCEPTION, Proficiencies.ACROBATICS, Proficiencies.INVESTIGATION, Proficiencies.DEXTERITY, Proficiencies.CONSTITUTION)
+        } else if (race == Races.HALF_ELF) {
+          primeStat = Guard.StatNames.DEX
+          abilities = abilities :+ Abilities.SNEAK_ATTACK
+          proficiencies = List(Proficiencies.PERCEPTION, Proficiencies.PERSUASION, Proficiencies.INTIMIDATION, Proficiencies.CHARISMA, Proficiencies.CONSTITUTION)
+        } else {
+          primeStat = Guard.StatNames.STR
+          proficiencies = List(Proficiencies.PERCEPTION, Proficiencies.ATHLETICS, Proficiencies.INTIMIDATION_STRENGTH, Proficiencies.STRENGTH, Proficiencies.CONSTITUTION)
+        }
+
+        equipment = equipment :+ EquipmentBuilder(race)
+        equipment = equipment :+ EquipmentBuilder.Weapons.CROSSBOW
+
+        var spells = Spells(List[Int](), List[List[Spell]]())
+
+        if (Random.nextInt(10) == 1) {
+          abilities = abilities :+ Abilities.SMITE
+          spells = ClassSpells.paladin
+        }
+
+        guardList = guardList :+ Guard(race, stats, primeStat, equipment, proficiencies, abilities, spells)
+
+      } else {
+        meleeChance = meleeChance + ((1/count) * 100)
+        val casterType = Random.nextInt(3)
+
+        if (casterType == 0) {
+          primeStat =  Guard.StatNames.WIS
+          stats = Stats.Caster.wis(race)
+          val classNr = Random.nextInt(2)
+
+          val spells = if (classNr == 0) ClassSpells.cleric else ClassSpells.druid
+          proficiencies = List(Proficiencies.PERCEPTION, Proficiencies.INSIGHT, Proficiencies.MEDICINE, Proficiencies.WISDOM, Proficiencies.CONSTITUTION)
+          guardList = guardList :+ Guard(race, stats, primeStat, equipment, proficiencies, abilities, spells)
+        } else if (casterType == 1) {
+          primeStat =  Guard.StatNames.INT
+          stats = Stats.Caster.int(race)
+          val spells = ClassSpells.wizard
+
+          proficiencies = List(Proficiencies.PERCEPTION, Proficiencies.INVESTIGATION, Proficiencies.ARCANA, Proficiencies.INTELLIGENCE, Proficiencies.DEXTERITY)
+          guardList = guardList :+ Guard(race, stats, primeStat, equipment, proficiencies, abilities, spells)
+        } else {
+          primeStat =  Guard.StatNames.CHA
+          stats = Stats.Caster.cha(race)
+          val classNr = Random.nextInt(3)
+
+          val spells = if (classNr == 0) ClassSpells.bard else if (classNr == 1) ClassSpells.sorcerer else ClassSpells.warlock
+          proficiencies = List(Proficiencies.PERCEPTION, Proficiencies.PERSUASION, Proficiencies.ARCANA, Proficiencies.CHARISMA, Proficiencies.CONSTITUTION)
+          guardList = guardList :+ Guard(race, stats, primeStat, equipment, proficiencies, abilities, spells)
+        }
+      }
+    }
+
+    if(leader) {
+      val index = Random.nextInt(guardList.length)
+      guardList(index) = guardList(index).addAbility(Abilities.LEADER)
+    }
+
+    guardList.toList
+  }
+
+  def getAbilities(race: String): List[Ability] = {
+    race match {
+      case Races.ELF => List(Abilities.FROSTBITE_CANTRIP)
+      case Races.HALF_ORC => List(Abilities.RAGE, Abilities.ENDURANCE)
+      case Races.DRAGONBORN => List(Abilities.DRAGON)
+      case Races.TIEFLING => List(Abilities.HELLISH_REBUKE, Abilities.THAUMATURGY)
+      case _ => List[Ability]()
+    }
+  }
+
+  def getRace(tieflingWarforged: Boolean): String = {
+    if(tieflingWarforged) {
+      randomRacesTieflingWarforged(Random.nextInt(randomRacesTieflingWarforged.length))
+    } else {
+      randomRacesDefault(Random.nextInt(randomRacesDefault.length))
+    }
+  }
+
+  val randomRacesDefault = List(Races.HUMAN, Races.DWARF, Races.ELF, Races.HALF_ELF, Races.DRAGONBORN, Races.HALF_ORC)
+  val randomRacesTieflingWarforged = List(Races.HUMAN, Races.DWARF, Races.ELF, Races.HALF_ELF, Races.DRAGONBORN,
+    Races.HALF_ORC, Races.TIEFLING, Races.WARFORGED, Races.TIEFLING, Races.WARFORGED, Races.TIEFLING, Races.WARFORGED)
 
   object Races {
     val HUMAN = "Human"
@@ -27,7 +127,7 @@ object GuardBuilder {
 
   object Stats {
 
-    val melee = Map(
+    val melee = ListMap(
       GuardBuilder.Races.HUMAN -> statMap(16, 14, 14, 10, 12, 12, 16, 25, 30, 2),
       GuardBuilder.Races.DWARF -> statMap(16, 14, 16, 10, 10, 10, 16, 30, 25, 2),
       GuardBuilder.Races.WARFORGED -> statMap(14, 14, 16, 10, 12, 8, 17, 22, 30, 2),
@@ -41,7 +141,7 @@ object GuardBuilder {
     private def statMap(str: Int, dex: Int, con: Int,
                         int: Int, wis: Int, cha: Int,
                         ac: Int, hp: Int, speed: Int,
-                        prof: Int): Map[String, Int] = {
+                        prof: Int): ListMap[String, Int] = {
       ListMap(
         Guard.StatNames.AC -> ac,
         Guard.StatNames.HP -> hp,
@@ -59,7 +159,7 @@ object GuardBuilder {
 
     object Caster {
 
-      val wis = Map(
+      val wis = ListMap(
         GuardBuilder.Races.HUMAN -> statMap(10, 14, 14, 12, 16, 12, 13, 20, 30, 2),
         GuardBuilder.Races.DWARF -> statMap(10, 12, 14, 12, 16, 12, 13, 25, 25, 2),
         GuardBuilder.Races.WARFORGED -> statMap(10, 12, 14, 10, 14, 14, 14, 20, 30, 2),
@@ -70,7 +170,7 @@ object GuardBuilder {
         GuardBuilder.Races.TIEFLING -> statMap(8, 14, 14, 11, 14, 14, 13, 20, 30, 2)
       )
 
-      val int = Map(
+      val int = ListMap(
         GuardBuilder.Races.HUMAN -> statMap(10, 14, 14, 16, 12, 12, 13, 20, 30, 2),
         GuardBuilder.Races.DWARF -> statMap(10, 14, 16, 14, 12, 12, 13, 28, 25, 2),
         GuardBuilder.Races.WARFORGED -> statMap(10, 12, 14, 14, 10, 14, 14, 20, 30, 2),
@@ -81,7 +181,7 @@ object GuardBuilder {
         GuardBuilder.Races.TIEFLING -> statMap(8, 14, 14, 14, 11, 14, 13, 20, 30, 2)
       )
 
-      val cha = Map(
+      val cha = ListMap(
         GuardBuilder.Races.HUMAN -> statMap(10, 14, 14, 12, 13, 16, 13, 20, 30, 2),
         GuardBuilder.Races.DWARF -> statMap(10, 14, 16, 12, 12, 14, 13, 25, 25, 2),
         GuardBuilder.Races.WARFORGED -> statMap(10, 12, 14, 14, 10, 14, 14, 20, 30, 2),
@@ -97,14 +197,6 @@ object GuardBuilder {
   }
 
   object ClassSpells {
-
-    val bard = Spells(defaultSpellSlots, bardSpellList)
-    val sorcerer = Spells(defaultSpellSlots, sorcererSpellList)
-    val warlock = Spells(warlockSpellSlots, warlockSpellList)
-    val paladin = Spells(paladinSpellSlots, paladinSpellList)
-    val druid = Spells(defaultSpellSlots, druidSpellList)
-    val cleric = Spells(defaultSpellSlots, clericSpellList)
-    val wizard = Spells(defaultSpellSlots, wizardSpellList)
 
     private val defaultSpellSlots = List[Int](4, 2)
     private val warlockSpellSlots = List[Int](0, 2)
@@ -149,6 +241,14 @@ object GuardBuilder {
       List[Spell](SpellList.TASHAS_HIDEOUS_LAUGHTER, SpellList.ENLARGE_REDUCE, SpellList.SHIELD),
       List[Spell](SpellList.SHATTER, SpellList.WEB)
     )
+
+    val bard = Spells(defaultSpellSlots, bardSpellList)
+    val sorcerer = Spells(defaultSpellSlots, sorcererSpellList)
+    val warlock = Spells(warlockSpellSlots, warlockSpellList)
+    val paladin = Spells(paladinSpellSlots, paladinSpellList)
+    val druid = Spells(defaultSpellSlots, druidSpellList)
+    val cleric = Spells(defaultSpellSlots, clericSpellList)
+    val wizard = Spells(defaultSpellSlots, wizardSpellList)
 
     object SpellList {
       val VICIOUS_MOCKERY = Spell("Vicious Mockery", 0)
@@ -204,6 +304,7 @@ object GuardBuilder {
     val DRAGON = Ability("Has elemental resistance and a breath weapon of 2D6 damage")
     val SNEAK_ATTACK = Ability("Can sneak attack for 2D6 damage")
     val FROSTBITE_CANTRIP = Ability("Can cast the cantrip Frostbite, with a DC of 13")
+    val LEADER = Ability("Commander's Strike & Inspire (1D8)", Map[String, Int](Guard.StatNames.CHA -> 2))
   }
 
   object Proficiencies {
@@ -222,6 +323,7 @@ object GuardBuilder {
     val INSIGHT = "Insight"
     val MEDICINE = "Medicine"
     val WISDOM = "Wisdom saving throws"
+    val INTELLIGENCE = "Intelligence saving throws"
   }
 
 }
